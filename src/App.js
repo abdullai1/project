@@ -1,31 +1,46 @@
 import React from 'react'
-import { DataQuery } from '@dhis2/app-runtime'
 import i18n from '@dhis2/d2-i18n'
-import classes from './App.module.css'
+import { Menu, MenuItem, MenuSectionHeader } from '@dhis2/ui'
+import styles from './App.module.css'
+import MapWrapper from './MapWrapper'
+import OrganizationUnits from './OrganizationUnits'
 
-const query = {
-    me: {
-        resource: 'me',
-    },
+let items = [
+    {key:"map", component:<MapWrapper key="map"/>},
+    {key:"ou", component:<OrganizationUnits key="ou"/>}
+];
+const MyApp = () => {
+    let [selected, setSelected] = React.useState(() => "map");
+
+    
+    return (
+        <div className={styles.container}>
+            <nav className={styles.menu} data-test-id="menu">
+                <MenuSectionHeader label={i18n.t('Menu')} />
+                <Menu>
+                    <MenuItem
+                        label={i18n.t('Map')}
+                        dataTest="menu-map"
+                        onClick={(e) => { setSelected(p => "map")} }
+                    />
+                    <MenuItem
+                        label={i18n.t('OrganizationUnits')}
+                        dataTest="menu-ou"
+                        onClick={(e) => { setSelected(p => "ou")} }
+                    />
+                </Menu>
+            </nav>
+            <main className={styles.main}>
+                
+                
+                { items.map( (item=> {
+                    if (item.key == selected ) {
+                        return item.component 
+                    } 
+                }) ) }
+            </main>
+        </div>
+    )
 }
-
-const MyApp = () => (
-    <div className={classes.container}>
-        <DataQuery query={query}>
-            {({ error, loading, data }) => {
-                if (error) return <span>ERROR</span>
-                if (loading) return <span>...</span>
-                return (
-                    <>
-                        <h1>
-                            {i18n.t('Hello {{name}}', { name: data.me.name })}
-                        </h1>
-                        <h3>{i18n.t('Welcome to DHIS2!')}</h3>
-                    </>
-                )
-            }}
-        </DataQuery>
-    </div>
-)
 
 export default MyApp
